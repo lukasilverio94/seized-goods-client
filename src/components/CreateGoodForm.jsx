@@ -16,7 +16,6 @@ function CreateGoodForm() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get("/api/v1/categories");
-        console.log(response.data);
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories", error);

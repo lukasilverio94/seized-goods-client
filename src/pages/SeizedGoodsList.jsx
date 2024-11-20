@@ -29,7 +29,7 @@ function SeizedGoodsList() {
           List of Seized Goods
         </h2>
         <Link to="/create-good">
-          <button className="bg-indigo-500 text-white p-2 rounded-md">
+          <button className="bg-indigo-500 text-white p-2 mr-4 rounded-md">
             Register Item
           </button>
         </Link>
