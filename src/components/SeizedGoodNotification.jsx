@@ -9,7 +9,12 @@ const SeizedGoodNotifications = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const eventSource = new EventSource(SERVER_URL);
+    const categoriesOfInterest = [1, 2];
+    const eventSource = new EventSource(
+      `${SERVER_URL}/?categories=${categoriesOfInterest.join(",")}`
+    );
+
+    console.log(eventSource);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -19,7 +24,6 @@ const SeizedGoodNotifications = () => {
         setNotifications((prev) => [data, ...prev]);
         setUnreadCount((prev) => prev + 1);
       } else if (data.type === "delete") {
-        // Remove the deleted notification
         setNotifications((prev) => prev.filter((item) => item.id !== data.id));
       }
     };
@@ -70,8 +74,8 @@ const SeizedGoodNotifications = () => {
                   key={index}
                   className="px-4 py-2 hover:bg-gray-100 border-b last:border-b-0"
                 >
-                  <strong>{item.name}</strong>: {item.description} (Value: $
-                  {item.value})
+                  <strong>{item.name}</strong>: {item.description} (Category:{" "}
+                  {item.category}, Value: ${item.value})
                 </li>
               ))
             ) : (
