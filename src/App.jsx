@@ -9,11 +9,19 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SeizedGoodNotifications from "./components/SeizedGoodNotification";
 import axios from "axios";
 import "./index.css";
+import { useDispatch } from "react-redux";
+import { fetchCurrentUser } from "./store/authSlice";
+import { useEffect } from "react";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:3000";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
   return (
     <Router>
       <div style={{ display: "flex" }} />
@@ -25,17 +33,16 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/goods" element={<SeizedGoodsList />} />
         <Route path="/goods/:id" element={<GoodDetail />} />
-        <Route path="/create-good" element={<CreateGoodForm />} />
-        <Route path="/signup" element={<UserSignup />} />
-        <Route path="/login" element={<UserLogin />} />
         <Route
-          path="/protected"
+          path="/create-good"
           element={
             <ProtectedRoute>
-              <h2>Protected Page</h2>
+              <CreateGoodForm />
             </ProtectedRoute>
           }
         />
+        <Route path="/signup" element={<UserSignup />} />
+        <Route path="/login" element={<UserLogin />} />
       </Routes>
     </Router>
   );

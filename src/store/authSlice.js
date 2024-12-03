@@ -16,18 +16,42 @@ const authSlice = createSlice({
       state.loading = action.payload;
     },
     setUser: (state, action) => {
-      state.user = action.payload;
-      state.isAuthenticated = !!action.payload;
+      console.log("Setting user:", action.payload);
+      state.user = action.payload.user || null;
+      state.isAuthenticated = !!action.payload.user;
       state.loading = false;
+    },
+    setTokens: (state, action) => {
+      const { accessToken, refreshToken } = action.payload;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
     },
     setError: (state, action) => {
       state.error = action.payload;
       state.loading = false;
     },
+    logoutUser: (state) => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      state.user = null;
+      state.isAuthenticated = false;
+    },
   },
 });
 
-export const { setLoading, setUser, setError } = authSlice.actions;
+export const fetchCurrentUser = () => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    const response = await axios.get("/api/v1/auth/me");
+    dispatch(setUser({ user: response.data }));
+  } catch (error) {
+    console.error("Failed to fetch current user:", error);
+    dispatch(setError("Failed to fetch user data"));
+  }
+};
+
+export const { setLoading, setUser, setTokens, setError, logoutUser } =
+  authSlice.actions;
 
 export const signup = (userData) => async (dispatch) => {
   dispatch(setLoading(true));
@@ -42,8 +66,11 @@ export const signup = (userData) => async (dispatch) => {
 export const login = (credentials) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
-    const response = await axios.post("/api/v1/users/login", credentials);
-    dispatch(setUser(response.data.user));
+    const response = await axios.post("/api/v1/auth/login", credentials);
+    const { user, accessToken, refreshToken } = response.data;
+
+    dispatch(setUser({ user }));
+    dispatch(setTokens({ accessToken, refreshToken }));
   } catch (error) {
     dispatch(setError(error.response?.data?.message || "Login failed"));
   }

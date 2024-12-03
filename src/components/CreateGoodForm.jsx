@@ -32,7 +32,15 @@ function CreateGoodForm() {
     e.preventDefault();
 
     if (!selectedCategory) {
-      setError("Category is required");
+      setError("Please select a category.");
+      return;
+    }
+    if (!name.trim() || !description.trim() || !value) {
+      setError("All fields are required.");
+      return;
+    }
+    if (isNaN(value) || value <= 0) {
+      setError("Value must be a positive number.");
       return;
     }
 
@@ -40,8 +48,9 @@ function CreateGoodForm() {
     formData.append("name", name);
     formData.append("description", description);
     formData.append("value", parseFloat(value));
-    formData.append("categoryId", selectedCategory);
+    formData.append("categoryId", parseInt(selectedCategory));
 
+    console.log("Form Data:", { name, description, value, selectedCategory });
     for (let i = 0; i < imageFiles.length; i++) {
       formData.append("files", imageFiles[i]);
     }
@@ -54,10 +63,12 @@ function CreateGoodForm() {
       });
       navigate("/goods");
     } catch (error) {
-      console.log(error);
-      setError(
-        "Failed to create a good. Ensure all fields are filled correctly."
-      );
+      console.error(error);
+      if (error.response && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Failed to create a good. Please try again.");
+      }
     }
   };
 

@@ -14,8 +14,6 @@ const SeizedGoodNotifications = () => {
       `${SERVER_URL}/?categories=${categoriesOfInterest.join(",")}`
     );
 
-    console.log(eventSource);
-
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
       console.log("Event received:", data);
